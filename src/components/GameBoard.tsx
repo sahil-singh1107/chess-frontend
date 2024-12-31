@@ -21,7 +21,7 @@ const GameBoard = ({ color, socket, chess, setChess }: { color: any, socket: Web
     }   
 
     return (
-        <Chessboard position={chess.fen()} boardOrientation={color} onPieceDrop={onDrop} />
+        <Chessboard position={chess.fen()} boardOrientation={color} onPieceDrop={onDrop} boardWidth={500} />
     )
 }
 
