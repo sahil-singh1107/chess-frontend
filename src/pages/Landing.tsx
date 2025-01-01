@@ -4,9 +4,9 @@ import GameBoard from "../components/GameBoard";
 import { Chess } from "chess.js";
 import Moves from "../components/Moves";
 
-const Landing = () => {
+const Landing = ({name} : {name : string}) => {
 
-    const socket = useSocket();
+    const socket = useSocket(name);
 
     const [color, setColor] = useState<string>('white');
     const [chess, setChess] = useState(new Chess())
