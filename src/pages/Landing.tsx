@@ -2,6 +2,7 @@ import { useSocket } from "../hooks/useSocket";
 import { useEffect, useState } from "react";
 import GameBoard from "../components/GameBoard";
 import { Chess } from "chess.js";
+import Moves from "../components/Moves";
 
 const Landing = () => {
 
@@ -96,33 +97,7 @@ const Landing = () => {
                             {/* Display move history */}
                             <div className="p-4 rounded-lg mb-4 overflow-auto flex-grow h-2/3 w-full">
                                 <h4 className="text-white font-semibold mb-2 text-center">Moves:</h4>
-                                <div className="">
-                                    {
-                                        (() => {
-                                            const pairedMoves = [];
-                                            for (let i = 0; i < moves.length; i += 2) {
-                                                pairedMoves.push([moves[i], moves[i + 1]]);
-                                            }
-                                            return pairedMoves.map((pair, index) => (
-                                                <>
-                                                    <div className="flex items-center space-x-2" key={index}>
-                                                        <span
-                                                            className={`text-[#C3C2C1] font-bold px-2 py-1 ${index % 2 === 0 ? 'bg-transparent' : 'bg-[#2A2926]'
-                                                                }`}
-                                                        >
-                                                            {index + 1}.
-                                                        </span>
-                                                        <div className={`text-sm font-extrabold text-[#C3C2C1] flex space-x-2 ${index % 2 === 0 ? 'bg-transparent' : 'bg-[#2a2926]'}`}>
-                                                            <span className="mr-2">{pair[0]}</span>
-                                                            <span>{pair[1]}</span>
-                                                        </div>
-                                                    </div>
-                                                </>
-
-                                            ));
-                                        })()
-                                    }
-                                </div>
+                                <Moves moves={moves} />
 
                             </div>
                             <div className="border border-[#312e2a]"></div>
