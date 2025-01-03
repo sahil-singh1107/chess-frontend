@@ -4,21 +4,26 @@ import GameBoard from "../components/GameBoard";
 import { Chess } from "chess.js";
 import Moves from "../components/Moves";
 import { useNavigate } from "react-router-dom";
+import game_start from "../assets/game-start.mp3"
+import move_self from "../assets/move-self.mp3"
+import illegal_move from "../assets/illegal.mp3"
 
 const Landing = () => {
 
-    const [name, setName] = useState<string | null>("");
+    const [name, setName] = useState<string | null>(localStorage.getItem("username"));
+    const [opponentName, setOpponentName] = useState<string | null>("");
 
     useEffect(() => {
         if (!localStorage.getItem("username")) {
             navigate("/signin");
         }
-        setName(localStorage.getItem("username"))
     }, [])
 
     let navigate = useNavigate();
     const socket = useSocket(name);
-
+    const game_start_audio = new Audio(game_start);
+    const move_audio = new Audio(move_self);
+    const illegal_audio = new Audio(illegal_move);
     const [color, setColor] = useState<string>('white');
     const [chess, setChess] = useState(new Chess())
     const [started, setStarted] = useState(false);
@@ -46,10 +51,19 @@ const Landing = () => {
                     setStarted(true);
                     setChess(new Chess());
                     break;
+                case "opponent":
+                    setOpponentName(message.payload.opponent);
+                    game_start_audio.play();
+                    break
                 case "move":
+                    console.log(message.payload);
                     chess.move(message.payload);
                     setChess(new Chess(chess.fen()));
                     setMoves((prev) => [...prev, message.payload.to])
+                    move_audio.play();
+                    break;
+                case "illegal_move":
+                    illegal_audio.play()
                     break;
                 case "game_over":
                     console.log("game over");
@@ -65,6 +79,8 @@ const Landing = () => {
     }, [socket]);
 
 
+    console.log(opponentName);
+
     return (
 
         <div className="h-screen w-screen bg-[#312E2A] relative">
@@ -75,7 +91,7 @@ const Landing = () => {
                 <div className="w-1/2 flex flex-col items-center justify-between">
                     {/* Chess Board */}
                     <div>
-                        <span></span>
+                        <span>{opponentName && opponentName}</span>
                     </div>
 
                     <div>
