@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import GameBoard from "../components/GameBoard";
 import { Chess } from "chess.js";
 import Moves from "../components/Moves";
+import { useNavigate } from "react-router-dom";
 
-const Landing = ({name} : {name : string}) => {
+const Landing = ({name} : {name : string | null}) => {
 
+    let navigate = useNavigate();
     const socket = useSocket(name);
 
     const [color, setColor] = useState<string>('white');
@@ -18,6 +20,10 @@ const Landing = ({name} : {name : string}) => {
     useEffect(() => {
         if (!socket) {
             return;
+        }
+
+        if (!name) {
+            navigate("/signin")
         }
 
         socket.onmessage = (event) => {
@@ -53,11 +59,14 @@ const Landing = ({name} : {name : string}) => {
     return (
 
         <div className="h-screen w-screen bg-[#312E2A] relative">
+            <div className="w-[8%] bg-[#272523]">
+                
+            </div>
             <div className="absolute m-11 z-10 top-0 left-0 right-0 bottom-0 flex">
                 <div className="w-1/2 flex flex-col items-center justify-between">
                     {/* Chess Board */}
                     <div>
-                        <span>player 1</span>
+                        <span></span>
                     </div>
 
                     <div>
@@ -65,7 +74,7 @@ const Landing = ({name} : {name : string}) => {
                     </div>
 
                     <div>
-                        <span>player 2</span>
+                        <span>{name && name}</span>
                     </div>
                 </div>
 
