@@ -5,7 +5,16 @@ import { Chess } from "chess.js";
 import Moves from "../components/Moves";
 import { useNavigate } from "react-router-dom";
 
-const Landing = ({name} : {name : string | null}) => {
+const Landing = () => {
+
+    const [name, setName] = useState<string | null>("");
+
+    useEffect(() => {
+        if (!localStorage.getItem("username")) {
+            navigate("/signin");
+        }
+        setName(localStorage.getItem("username"))
+    }, [])
 
     let navigate = useNavigate();
     const socket = useSocket(name);
@@ -60,7 +69,7 @@ const Landing = ({name} : {name : string | null}) => {
 
         <div className="h-screen w-screen bg-[#312E2A] relative">
             <div className="w-[8%] bg-[#272523]">
-                
+
             </div>
             <div className="absolute m-11 z-10 top-0 left-0 right-0 bottom-0 flex">
                 <div className="w-1/2 flex flex-col items-center justify-between">

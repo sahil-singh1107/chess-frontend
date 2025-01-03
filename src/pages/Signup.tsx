@@ -41,11 +41,10 @@ const Signup = () => {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const res = await axios.post("http://localhost:3000/signup", {
+            await axios.post("http://localhost:3000/signup", {
                 username: values.username,
                 password: values.password
             })
-            localStorage.setItem("username", res.data);
             navigate("/signin");
         } catch (error) {
             console.log(error);
@@ -113,7 +112,7 @@ const Signup = () => {
                     </form>
                 </Form>
                 <div className="h-[0.1px] bg-[#444241] mt-6"></div>
-                <p className="text-white mt-3 hover:underline focus:underline hover:cursor-pointer" onClick={() => {navigate("/signin")}}>Signin</p>
+                <p className="text-white text-center mt-3 hover:underline focus:underline hover:cursor-pointer" onClick={() => {navigate("/signin")}}>Signin</p>
             </div>
         </div>
     );
