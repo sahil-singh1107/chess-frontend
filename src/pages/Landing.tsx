@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import game_start from "../assets/game-start.mp3"
 import move_self from "../assets/move-self.mp3"
 import illegal_move from "../assets/illegal.mp3"
+import PlayerCard from "@/components/PlayerCard";
 
 const Landing = () => {
 
@@ -35,11 +36,9 @@ const Landing = () => {
         if (!socket) {
             return;
         }
-
         if (!name) {
             navigate("/signin")
         }
-
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
 
@@ -78,9 +77,6 @@ const Landing = () => {
         }
     }, [socket]);
 
-
-    console.log(opponentName);
-
     return (
 
         <div className="h-screen w-screen bg-[#312E2A] relative">
@@ -91,7 +87,7 @@ const Landing = () => {
                 <div className="w-1/2 flex flex-col items-center justify-between">
                     {/* Chess Board */}
                     <div>
-                        <span>{opponentName && opponentName}</span>
+                        <PlayerCard username={opponentName} />
                     </div>
 
                     <div>
@@ -99,7 +95,7 @@ const Landing = () => {
                     </div>
 
                     <div>
-                        <span>{name && name}</span>
+                        <PlayerCard username={name} />
                     </div>
                 </div>
 
