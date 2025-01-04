@@ -15,6 +15,7 @@ const Landing = () => {
     const [name, setName] = useState<string | null>(localStorage.getItem("username"));
     const [opponentName, setOpponentName] = useState<string | null>("");
 
+
     useEffect(() => {
         if (!localStorage.getItem("username")) {
             navigate("/signin");
@@ -70,9 +71,7 @@ const Landing = () => {
                     chess.move(message.payload.move);
                     setChess(new Chess(chess.fen()));
                     setMoves((prev) => [...prev, message.payload.move.to]);
-
                     toggleClock();
-
                     move_audio.play();
                     break;
                 case "illegal_move":
@@ -109,7 +108,7 @@ const Landing = () => {
                         <GameBoard color={color} socket={socket} chess={chess} setChess={setChess} />
                     </div>
 
-                    <div>
+                    <div className="flex justify-between w-full">
                         <PlayerCard username={name} />
                         <span className={`${isRunning ? 'bg-[#ffff]' : 'bg-[#989795]'}`}>
                             {formatTime(time)}
