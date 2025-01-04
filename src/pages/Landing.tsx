@@ -32,16 +32,10 @@ const Landing = () => {
     const [started, setStarted] = useState(false);
     const [messages, setMessages] = useState<string[]>([]);
     const [typedMessage, setTypedMessage] = useState<string>("");
-    const [moves, setMoves] = useState<string[]>([])
+    const [moves, setMoves] = useState<string[]>(["e4", "e4", "e4"])
     const { time, isRunning, toggleClock } = useClock()
 
-    const formatTime = (seconds: number) => {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds
-            .toString()
-            .padStart(2, '0')}`;
-    };
+
 
     useEffect(() => {
         if (!socket) {
@@ -91,96 +85,45 @@ const Landing = () => {
     }, [socket]);
 
     return (
-
-        <div className="h-screen w-screen bg-[#312E2A] relative">
-            <div className="w-[8%] bg-[#272523]">
-
-            </div>
+        <div className="h-screen w-screen bg-gradient-to-b from-zinc-900 via-zinc-800 to-black relative">
             <div className="absolute m-11 z-10 top-0 left-0 right-0 bottom-0 flex">
-                <div className="w-1/2 flex flex-col items-center justify-between">
-                    {/* Chess Board */}
-                    <div>
-                        <PlayerCard username={opponentName} />
-
+                <div className="w-full flex flex-col items-center ">
+                    <div className="flex justify-between w-full">
+                        <PlayerCard username={opponentName} time={600} />
                     </div>
-
+                    <div className="absolute top-0 left-0">
+                        <p className="text-white">sss</p>
+                    </div>
                     <div>
-                        <GameBoard color={color} socket={socket} chess={chess} setChess={setChess} />
+                        <GameBoard color={color} socket={socket} chess={chess} setChess={setChess} started={started} />
                     </div>
 
                     <div className="flex justify-between w-full">
-                        <PlayerCard username={name} />
-                        <span className={`${isRunning ? 'bg-[#ffff]' : 'bg-[#989795]'}`}>
-                            {formatTime(time)}
-                        </span>
+                        <PlayerCard username={name} time={time} />
                     </div>
                 </div>
 
-                <div className="w-1/2 bg-[#272422] rounded-2xl">
+                <div className="absolute right-0 top-0 bottom-0 flex items-center justify-center w-[20%]">
                     {!started ? (
-                        <div className="flex flex-col space-y-10 items-center justify-center flex-grow">
-                            <span className="text-white font-bold text-4xl mt-8">Play Chess Online</span>
-                            <button
-                                className="bg-[#80B64D] w-full text-white h-16 font-bold text-2xl rounded-lg border-b-4 border-[#44753D] hover:bg-[#9BD45E] hover:border-[#5B8F49] transition duration-200"
-                                onClick={() => {
-                                    socket?.send(
-                                        JSON.stringify({
-                                            type: "init_game",
-                                        })
-                                    );
-                                }}
-                            >
-                                Play Online
-                            </button>
-                        </div>
+                        <button
+                            className="px-4 py-2 w-full bg-[#fedf32] rounded-md font-bold"
+                            onClick={() => {
+                                socket?.send(
+                                    JSON.stringify({
+                                        type: "init_game",
+                                    })
+                                );
+                            }}
+                        >
+                            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-50 group-hover:translate-x-full transform transition-transform duration-500 ease-in-out"></span>
+                            <span className="relative z-10">Play Online</span>
+                        </button>
                     ) : (
-                        <div className="relative flex flex-col flex-grow h-full">
-                            <div className="flex justify-between m-6">
-                                <span>player 1</span>
-                                <span>player 2</span>
-                            </div>
-                            <div className="border border-[#312e2a]"></div>
-
-                            {/* Display move history */}
-                            <div className="p-4 rounded-lg mb-4 overflow-auto flex-grow h-2/3 w-full">
-                                <h4 className="text-white font-semibold mb-2 text-center">Moves:</h4>
+                        <>
+                            <div className="w-full h-full">
                                 <Moves moves={moves} />
-
                             </div>
-                            <div className="border border-[#312e2a]"></div>
-                            {/* Chat and input */}
-                            <div className="flex flex-col justify-between mt-4 flex-shrink-0 h-1/3">
-                                <div className="flex flex-col overflow-auto m-4">
-                                    {messages.map((message, i) => (
-                                        <p key={i} className="text-sm text-white">{message}</p>
-                                    ))}
-                                </div>
-
-                                <div className="flex gap-2 mt-2">
-                                    <input
-                                        value={typedMessage}
-                                        onChange={(e) => setTypedMessage(e.target.value)}
-                                        className="flex-1 p-2 border border-gray-300 rounded bg-[#272422] border-none focus:border-[#272422] text-white"
-                                        placeholder="Type your message..."
-                                    />
-                                    <button
-                                        disabled={!typedMessage}
-                                        onClick={() => {
-                                            socket?.send(
-                                                JSON.stringify({
-                                                    type: "message",
-                                                    data: typedMessage,
-                                                })
-                                            );
-                                            setTypedMessage("");
-                                        }}
-                                        className="bg-[#80B64D] text-white px-4 py-2 rounded hover:bg-[#9BD45E] disabled:bg-gray-400"
-                                    >
-                                        Send
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        </>
                     )}
                 </div>
             </div>

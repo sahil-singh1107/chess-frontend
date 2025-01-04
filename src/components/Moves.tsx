@@ -1,35 +1,32 @@
-import React from 'react'
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+
 
 const Moves = ({ moves }: { moves: string[] }) => {
-    return (
-        <div>
-            {
-                (() => {
-                    const pairedMoves = [];
-                    for (let i = 0; i < moves.length; i += 2) {
-                        pairedMoves.push([moves[i], moves[i + 1]]);
-                    }
-                    return pairedMoves.map((pair, index) => (
-                        <>
-                            <div className="flex items-center space-x-2" key={index}>
-                                <span
-                                    className={`text-[#C3C2C1] font-bold px-2 py-1 ${index % 2 === 0 ? 'bg-transparent' : 'bg-[#2A2926]'
-                                        }`}
-                                >
-                                    {index + 1}.
-                                </span>
-                                <div className={`text-sm font-extrabold text-[#C3C2C1] flex space-x-2 ${index % 2 === 0 ? 'bg-transparent' : 'bg-[#2a2926]'}`}>
-                                    <span className="mr-2">{pair[0]}</span>
-                                    <span>{pair[1]}</span>
-                                </div>
-                            </div>
-                        </>
 
-                    ));
-                })()
-            }
-        </div>
-    )
+    const pairedMoves = [];
+    for (let i = 0; i < moves.length; i += 2) {
+        pairedMoves.push([moves[i], moves[i + 1]]);
+    }
+
+    return <Table className="mt-20">
+        {
+            pairedMoves.map((moves,i) => (
+                <TableRow key={i} className="border hover:text-white">
+                    <TableCell className="text-[#A1A0AB] border text-center">{i+1}</TableCell>
+                    <TableCell className="text-[#A1A0AB] border text-center">{moves[0]}</TableCell>
+                    <TableCell className="text-[#A1A0AB] text-center">{moves[1]}</TableCell>
+                </TableRow>
+            ))
+        }
+    </Table>
 }
 
 export default Moves

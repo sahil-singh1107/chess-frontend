@@ -2,7 +2,7 @@ import { Chessboard } from 'react-chessboard';
 import move_self from "../assets/move-self.mp3"
 import illegal_move from "../assets/illegal.mp3"
 
-const GameBoard = ({ color, socket, chess, setChess }: { color: any, socket: WebSocket | null, chess: any, setChess: any }) => {
+const GameBoard = ({ color, socket, chess, setChess,  started }: { color: any, socket: WebSocket | null, chess: any, setChess: any, started: boolean }) => {
 
     const move_audio = new Audio(move_self);
     const illegal_audio = new Audio(illegal_move);
@@ -26,9 +26,8 @@ const GameBoard = ({ color, socket, chess, setChess }: { color: any, socket: Web
 
         
     }   
-
     return (
-        <Chessboard position={chess.fen()} boardOrientation={color} onPieceDrop={onDrop} boardWidth={500} />
+        <Chessboard position={chess.fen()} boardOrientation={color} onPieceDrop={onDrop} boardWidth={500} customDarkSquareStyle={{backgroundColor: '#90877c'}} customLightSquareStyle={{backgroundColor: "#aca296"}} customBoardStyle={{boxShadow:`${started && "0 0 15px 5px rgba(169, 169, 169, 0.7)"} `}} areArrowsAllowed={true} customArrowColor='#f9f1e4' />
     )
 }
 
