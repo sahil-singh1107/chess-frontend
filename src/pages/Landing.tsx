@@ -8,6 +8,7 @@ import game_start from "../assets/game-start.mp3"
 import move_self from "../assets/move-self.mp3"
 import illegal_move from "../assets/illegal.mp3"
 import PlayerCard from "@/components/PlayerCard";
+import useClock from "@/hooks/useClock";
 
 const Landing = () => {
 
@@ -31,6 +32,15 @@ const Landing = () => {
     const [messages, setMessages] = useState<string[]>([]);
     const [typedMessage, setTypedMessage] = useState<string>("");
     const [moves, setMoves] = useState<string[]>([])
+    const { time, isRunning, toggleClock } = useClock()
+
+    const formatTime = (seconds: number) => {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds
+            .toString()
+            .padStart(2, '0')}`;
+    };
 
     useEffect(() => {
         if (!socket) {
@@ -41,13 +51,14 @@ const Landing = () => {
         }
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
-
             console.log(message);
-
             switch (message.type) {
                 case "init_game":
                     setColor(message.payload.color);
                     setStarted(true);
+                    if (message.payload.color === "white") {
+                        toggleClock();
+                    }
                     setChess(new Chess());
                     break;
                 case "opponent":
@@ -56,9 +67,12 @@ const Landing = () => {
                     break
                 case "move":
                     console.log(message.payload);
-                    chess.move(message.payload);
+                    chess.move(message.payload.move);
                     setChess(new Chess(chess.fen()));
-                    setMoves((prev) => [...prev, message.payload.to])
+                    setMoves((prev) => [...prev, message.payload.move.to]);
+
+                    toggleClock();
+
                     move_audio.play();
                     break;
                 case "illegal_move":
@@ -88,6 +102,7 @@ const Landing = () => {
                     {/* Chess Board */}
                     <div>
                         <PlayerCard username={opponentName} />
+
                     </div>
 
                     <div>
@@ -96,6 +111,9 @@ const Landing = () => {
 
                     <div>
                         <PlayerCard username={name} />
+                        <span className={`${isRunning ? 'bg-[#ffff]' : 'bg-[#989795]'}`}>
+                            {formatTime(time)}
+                        </span>
                     </div>
                 </div>
 
