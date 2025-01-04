@@ -41,13 +41,11 @@ const Landing = () => {
     const illegal_audio = new Audio(illegal_move);
     const [color, setColor] = useState<string>('white');
     const [chess, setChess] = useState(new Chess())
-    const [started, setStarted] = useState(true);
+    const [started, setStarted] = useState(false);
     const [messages, setMessages] = useState<string[]>([]);
     const [typedMessage, setTypedMessage] = useState<string>("");
     const [moves, setMoves] = useState<string[]>([])
     const { time, isRunning, toggleClock } = useClock()
-
-
 
     useEffect(() => {
         if (!socket) {
@@ -55,6 +53,15 @@ const Landing = () => {
         }
         if (!name) {
             navigate("/signin")
+        }
+        if (time===0) {
+            socket.send(JSON.stringify({
+                type : "lost",
+                payload: {
+                    lost : color
+                }
+            }))
+            toggleClock();
         }
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
@@ -85,6 +92,7 @@ const Landing = () => {
                     break;
                 case "game_over":
                     console.log("game over");
+                    console.log(message.payload.winner);
                     break;
                 case "message":
                     console.log(message.payload);
@@ -94,7 +102,7 @@ const Landing = () => {
                     break;
             }
         }
-    }, [socket]);
+    }, [socket,time]);
 
     return (
         <div className="h-screen w-screen bg-gradient-to-b from-zinc-900 via-zinc-800 to-black relative">
@@ -112,7 +120,7 @@ const Landing = () => {
                                 </div>
                                 <div className="flex flex-col items-center rounded-md hover:bg-[#303233] p-3">
                                     <DropdownMenu>
-                                        <DropdownMenuTrigger><button><CiChat1 className="text-white w-10 h-10" /></button>
+                                        <DropdownMenuTrigger><CiChat1 className="text-white w-10 h-10" />
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent className="bg-[#1a1a1d] w-96 h-64">
                                             <DropdownMenuLabel>{opponentName}</DropdownMenuLabel>
@@ -120,7 +128,7 @@ const Landing = () => {
                                             <div className="flex flex-col overflow-hidden">
                                                 <div className="flex-1 p-4 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
                                                     {
-                                                        moves.map((move, i) => (
+                                                        messages.map((move, i) => (
                                                             <div key={i} className=" p-2 rounded-md text-white">{move}</div>
                                                         ))
                                                     }
@@ -130,8 +138,9 @@ const Landing = () => {
                                                     <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-400" onClick={() => {
                                                         socket?.send(JSON.stringify({
                                                             type: "message",
-                                                            data: { typedMessage }
-                                                        }))
+                                                            data: typedMessage
+                                                        })) 
+                                                        setTypedMessage('')
                                                     }}>Send</button>
                                                 </div>
                                             </div>
