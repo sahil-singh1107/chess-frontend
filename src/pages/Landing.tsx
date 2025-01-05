@@ -7,10 +7,12 @@ import { useNavigate } from "react-router-dom";
 import game_start from "../assets/game-start.mp3"
 import move_self from "../assets/move-self.mp3"
 import illegal_move from "../assets/illegal.mp3"
+import game_end from "../assets/game-end.mp3"
 import PlayerCard from "@/components/PlayerCard";
 import useClock from "@/hooks/useClock";
 import { LuPlus } from "react-icons/lu";
 import { CiChat1 } from "react-icons/ci";
+import { CiFlag1 } from "react-icons/ci";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -23,11 +25,8 @@ import {
 
 
 const Landing = () => {
-
     const [name, setName] = useState<string | null>(localStorage.getItem("username"));
     const [opponentName, setOpponentName] = useState<string | null>("");
-
-
     useEffect(() => {
         if (!localStorage.getItem("username")) {
             navigate("/signin");
@@ -39,10 +38,12 @@ const Landing = () => {
     const game_start_audio = new Audio(game_start);
     const move_audio = new Audio(move_self);
     const illegal_audio = new Audio(illegal_move);
+    const game_end_audio = new Audio(game_end)
     const [color, setColor] = useState<string>('white');
     const [chess, setChess] = useState(new Chess())
     const [started, setStarted] = useState(false);
     const [messages, setMessages] = useState<string[]>([]);
+    const [isGameOver, setIsGameOver] = useState<boolean>(false);
     const [typedMessage, setTypedMessage] = useState<string>("");
     const [moves, setMoves] = useState<string[]>([])
     const { time, isRunning, toggleClock } = useClock()
@@ -54,11 +55,11 @@ const Landing = () => {
         if (!name) {
             navigate("/signin")
         }
-        if (time===0) {
+        if (time === 0) {
             socket.send(JSON.stringify({
-                type : "lost",
+                type: "lost",
                 payload: {
-                    lost : color
+                    lost: color
                 }
             }))
             toggleClock();
@@ -92,6 +93,9 @@ const Landing = () => {
                     break;
                 case "game_over":
                     console.log("game over");
+                    setIsGameOver(true);
+                    toggleClock();
+                    game_end_audio.play();
                     console.log(message.payload.winner);
                     break;
                 case "message":
@@ -102,7 +106,7 @@ const Landing = () => {
                     break;
             }
         }
-    }, [socket,time]);
+    }, [socket, time]);
 
     return (
         <div className="h-screen w-screen bg-gradient-to-b from-zinc-900 via-zinc-800 to-black relative">
@@ -114,10 +118,22 @@ const Landing = () => {
                     {
                         started && (
                             <div className="absolute top-60 left-20 flex flex-col space-y-5">
-                                <div className="flex flex-col rounded-md p-3 items-center hover:bg-[#303233]">
-                                    <button><LuPlus className="text-white w-10 h-10" /></button>
-                                    <span className="text-[#5c5a59]">New game</span>
+                                <div className="flex items-center space-x-3">
+                                    <div className="flex flex-col rounded-md p-3 items-center hover:bg-[#303233]">
+                                        <button><LuPlus className="text-white w-10 h-10" /></button>
+                                        <span className="text-[#5c5a59]">New game</span>
+                                    </div>
+                                    <div className="flex flex-col rounded-md p-3 items-center hover:bg-[#303233]">
+                                        <button onClick={() => {socket?.send(JSON.stringify({
+                                            type: "lost",
+                                            payload: {
+                                                lost: color
+                                            }
+                                        }))}}><CiFlag1 className="text-white w-10 h-10" /></button>
+                                        <span className="text-[#5c5a59]">Resign</span>
+                                    </div>
                                 </div>
+
                                 <div className="flex flex-col items-center rounded-md hover:bg-[#303233] p-3">
                                     <DropdownMenu>
                                         <DropdownMenuTrigger><CiChat1 className="text-white w-10 h-10" />
@@ -139,7 +155,7 @@ const Landing = () => {
                                                         socket?.send(JSON.stringify({
                                                             type: "message",
                                                             data: typedMessage
-                                                        })) 
+                                                        }))
                                                         setTypedMessage('')
                                                     }}>Send</button>
                                                 </div>
@@ -155,7 +171,7 @@ const Landing = () => {
                         )
                     }
                     <div>
-                        <GameBoard color={color} socket={socket} chess={chess} setChess={setChess} started={started} />
+                        <GameBoard color={color} socket={socket} chess={chess} setChess={setChess} started={started} isGameOver={isGameOver} />
                     </div>
 
                     <div className="flex justify-between w-full">
@@ -163,7 +179,7 @@ const Landing = () => {
                     </div>
                 </div>
 
-                <div className="absolute right-0 top-0 bottom-0 flex items-center justify-center w-[20%]">
+                <div className="absolute right-0 top-0 bottom-0 flex items-center justify-center w-[30%]">
                     {!started ? (
                         <button
                             className="px-4 py-2 w-full bg-[#fedf32] rounded-md font-bold"
@@ -179,11 +195,12 @@ const Landing = () => {
                             <span className="relative z-10">Play Online</span>
                         </button>
                     ) : (
-                        <>
+                        <div className="flex w-full">
+
                             <div className="w-full h-full">
                                 <Moves moves={moves} />
                             </div>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>
