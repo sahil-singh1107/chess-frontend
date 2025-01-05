@@ -22,7 +22,10 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-
+interface Move {
+    to : string
+    type : string
+}
 
 const Landing = () => {
     const [name, setName] = useState<string | null>(localStorage.getItem("username"));
@@ -41,11 +44,11 @@ const Landing = () => {
     const game_end_audio = new Audio(game_end)
     const [color, setColor] = useState<string>('white');
     const [chess, setChess] = useState(new Chess())
-    const [started, setStarted] = useState(false);
+    const [started, setStarted] = useState(true);
     const [messages, setMessages] = useState<string[]>([]);
     const [isGameOver, setIsGameOver] = useState<boolean>(false);
     const [typedMessage, setTypedMessage] = useState<string>("");
-    const [moves, setMoves] = useState<string[]>([])
+    const [moves, setMoves] = useState<Move[]>([{to : "e4", type: "bN"}, {to : "e4", type: "wN"}, {to : "e4", type: "bP"}, {to : "e4", type: "wP"}])
     const { time, isRunning, toggleClock } = useClock()
 
     useEffect(() => {
@@ -81,10 +84,11 @@ const Landing = () => {
                     game_start_audio.play();
                     break
                 case "move":
-                    console.log(message.payload);
-                    chess.move(message.payload.move);
+                    const pieceMove = {from : message.payload.move.from, to : message.payload.move.to}
+                    chess.move(pieceMove);
                     setChess(new Chess(chess.fen()));
-                    setMoves((prev) => [...prev, message.payload.move.to]);
+                    const move : Move = {to : message.payload.move.to, type :  message.payload.move.piece};
+                    setMoves((prev) => [...prev, move]);
                     toggleClock();
                     move_audio.play();
                     break;

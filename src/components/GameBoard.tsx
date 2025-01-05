@@ -7,13 +7,14 @@ const GameBoard = ({ color, socket, chess, setChess,  started, isGameOver }: { c
     const move_audio = new Audio(move_self);
     const illegal_audio = new Audio(illegal_move);
 
-    function onDrop(sourceSquare: string, targetSquare: string) {
+    function onDrop(sourceSquare: string, targetSquare: string, piece : string) {
         try {
             socket?.send(JSON.stringify({
                 type: "move",  
                 move: {                
                     from: sourceSquare,    
-                    to: targetSquare
+                    to: targetSquare,
+                    piece : piece
                 }
             }))
             move_audio.play();
