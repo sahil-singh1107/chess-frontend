@@ -8,6 +8,7 @@ const GameBoard = ({ color, socket, chess, setChess,  started, isGameOver }: { c
     const illegal_audio = new Audio(illegal_move);
 
     function onDrop(sourceSquare: string, targetSquare: string, piece : string) {
+        console.log(piece);
         try {
             socket?.send(JSON.stringify({
                 type: "move",  

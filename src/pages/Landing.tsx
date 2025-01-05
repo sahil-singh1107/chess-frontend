@@ -44,11 +44,11 @@ const Landing = () => {
     const game_end_audio = new Audio(game_end)
     const [color, setColor] = useState<string>('white');
     const [chess, setChess] = useState(new Chess())
-    const [started, setStarted] = useState(true);
+    const [started, setStarted] = useState(false);
     const [messages, setMessages] = useState<string[]>([]);
     const [isGameOver, setIsGameOver] = useState<boolean>(false);
     const [typedMessage, setTypedMessage] = useState<string>("");
-    const [moves, setMoves] = useState<Move[]>([{to : "e4", type: "bN"}, {to : "e4", type: "wN"}, {to : "e4", type: "bP"}, {to : "e4", type: "wP"}])
+    const [moves, setMoves] = useState<Move[]>([])
     const { time, isRunning, toggleClock } = useClock()
 
     useEffect(() => {
